@@ -54,7 +54,8 @@ GRANT_TYPE = 'client_credentials'
 # Defaults for our simple example.
 DEFAULT_TERM = 'dinner'
 DEFAULT_LOCATION = 'San Francisco, CA'
-SEARCH_LIMIT = 3
+DEFAULT_SORT_BY = 'review_count'
+SEARCH_LIMIT = 10
 
 
 def obtain_bearer_token(host, path):
@@ -109,7 +110,7 @@ def request(host, path, bearer_token, url_params=None):
     return response.json()
 
 
-def search(bearer_token, term, location):
+def search(bearer_token, term, location, sort_by):
     """Query the Search API by a search term and location.
     Args:
         term (str): The search term passed to the API.
@@ -121,9 +122,17 @@ def search(bearer_token, term, location):
     url_params = {
         'term': term.replace(' ', '+'),
         'location': location.replace(' ', '+'),
+        'sort_by': sort_by.replace(' ', '+'),
         'limit': SEARCH_LIMIT
+        # """so this is returning the right amount of searches
+        # it is now showing 10 results when I print the response. Now I just
+        # want it to pull the top 3 of these not just top 1
+        # """
     }
-    return request(API_HOST, SEARCH_PATH, bearer_token, url_params=url_params)
+    response = request(API_HOST, SEARCH_PATH, bearer_token, url_params=url_params)
+    # """print(response)
+    # """
+    return response
 
 
 def get_business(bearer_token, business_id):
@@ -138,7 +147,7 @@ def get_business(bearer_token, business_id):
     return request(API_HOST, business_path, bearer_token)
 
 
-def query_api(term, location):
+def query_api(term, location, sort_by):
     """Queries the API by the input values from the user.
     Args:
         term (str): The search term to query.
@@ -146,15 +155,15 @@ def query_api(term, location):
     """
     bearer_token = obtain_bearer_token(API_HOST, TOKEN_PATH)
 
-    response = search(bearer_token, term, location)
+    response = search(bearer_token, term, location, sort_by)
 
     businesses = response.get('businesses')
 
     if not businesses:
-        print(u'No businesses for {0} in {1} found.'.format(term, location))
+        print(u'No businesses for {0} in {1} found.'.format(term, location, sort_by))
         return
 
-    business_id = businesses[0]['id']
+    business_id = businesses[2]['id']
 
     print(u'{0} businesses found, querying business info ' \
         'for the top result "{1}" ...'.format(
@@ -173,11 +182,14 @@ def main():
     parser.add_argument('-l', '--location', dest='location',
                         default=DEFAULT_LOCATION, type=str,
                         help='Search location (default: %(default)s)')
+    parser.add_argument('-sb', '--sort_by', dest='sort_by',
+                        default=DEFAULT_SORT_BY, type=str,
+                        help='Search sort value (default: %(default)s)')
 
     input_values = parser.parse_args()
 
     try:
-        query_api(input_values.term, input_values.location)
+        query_api(input_values.term, input_values.location, input_values.sort_by)
     except HTTPError as error:
         sys.exit(
             'Encountered HTTP error {0} on {1}:\n {2}\nAbort program.'.format(
