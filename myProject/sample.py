@@ -70,6 +70,7 @@ def obtain_bearer_token(host, path):
         HTTPError: An error occurs from the HTTP request.
     """
     url = '{0}{1}'.format(host, quote(path.encode('utf8')))
+
     assert CLIENT_ID, "Please supply your client_id."
     assert CLIENT_SECRET, "Please supply your client_secret."
     data = urlencode({
@@ -99,6 +100,8 @@ def request(host, path, bearer_token, url_params=None):
     """
     url_params = url_params or {}
     url = '{0}{1}'.format(host, quote(path.encode('utf8')))
+    abc = urllib.unquote(url)
+    print(abc)
     headers = {
         'Authorization': 'Bearer %s' % bearer_token,
     }
@@ -162,8 +165,8 @@ def query_api(term, location, sort_by):
     if not businesses:
         print(u'No businesses for {0} in {1} found.'.format(term, location, sort_by))
         return
-    i = 0
-    while(i <= 2):
+    i = 1
+    while(i <= 1):
         business_id = businesses[i]['id']
 
         print(u'{0} businesses found, querying business info ' \
@@ -172,6 +175,8 @@ def query_api(term, location, sort_by):
         response = get_business(bearer_token, business_id)
 
         print(u'Result for business "{0}" found:'.format(business_id))
+        # for the second mexican restuarant this does not work becasue
+        # there is an escape character it has the N with a tilde
         pprint.pprint(response, indent=2)
         i = i+1
 
