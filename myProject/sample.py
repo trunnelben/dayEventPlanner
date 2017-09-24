@@ -59,8 +59,11 @@ GRANT_TYPE = 'client_credentials'
 
 # Defaults for our simple example.
 DEFAULT_TERM = 'dinner'
-DEFAULT_LOCATION = 'San Francisco, CA'
+# DEFAULT_LOCATION = 'San Francisco, CA'
+DEFAULT_LATITUDE = '1.0'
+DEFAULT_LONGITUDE = '1.0'
 DEFAULT_SORT_BY = 'review_count'
+DEFAULT_RADIUS = '800' #radius of .5 miles
 SEARCH_LIMIT = 10
 
 
@@ -119,7 +122,7 @@ def request(host, path, bearer_token, url_params=None):
     return response.json()
 
 
-def search(bearer_token, term, location, sort_by):
+def search(bearer_token, term, latitude, longitude, sort_by, radius):
     """Query the Search API by a search term and location.
     Args:
         term (str): The search term passed to the API.
@@ -130,8 +133,10 @@ def search(bearer_token, term, location, sort_by):
 
     url_params = {
         'term': term.replace(' ', '+'),
-        'location': location.replace(' ', '+'),
+        'latitude': latitude.replace(' ', '+'),
+        'longitude': longitude.replace(' ', '+'),
         'sort_by': sort_by.replace(' ', '+'),
+        'radius': radius.replace(' ', '+'),
         'limit': SEARCH_LIMIT
         # """so this is returning the right amount of searches
         # it is now showing 10 results when I print the response. Now I just
@@ -156,7 +161,7 @@ def get_business(bearer_token, business_id):
     return request(API_HOST, business_path, bearer_token)
 
 
-def query_api(term, location, sort_by):
+def query_api(term, latitude, longitude, sort_by, radius):
     """Queries the API by the input values from the user.
     Args:
         term (str): The search term to query.
@@ -164,15 +169,15 @@ def query_api(term, location, sort_by):
     """
     bearer_token = obtain_bearer_token(API_HOST, TOKEN_PATH)
 
-    response = search(bearer_token, term, location, sort_by)
+    response = search(bearer_token, term, latitude, longitude, sort_by, radius)
 
     businesses = response.get('businesses')
 
     if not businesses:
-        print(u'No businesses for {0} in {1} found.'.format(term, location, sort_by))
+        print(u'No businesses for {0} in {1} found.'.format(term, latitude, longitude, sort_by, radius))
         return
     i = 0
-    while(i <= 3):
+    while(i <= 0):
         business_id = businesses[i]['id']
 
         print(u'{0} businesses found, querying business info ' \
@@ -191,17 +196,23 @@ def main():
 
     parser.add_argument('-q', '--term', dest='term', default=DEFAULT_TERM,
                         type=str, help='Search term (default: %(default)s)')
-    parser.add_argument('-l', '--location', dest='location',
-                        default=DEFAULT_LOCATION, type=str,
-                        help='Search location (default: %(default)s)')
+    parser.add_argument('-la', '--latitude', dest='latitude',
+                        default=DEFAULT_LATITUDE, type=str,
+                        help='Search longitude (default: %(default)s)')
+    parser.add_argument('-lo', '--longitude', dest='longitude',
+                        default=DEFAULT_LONGITUDE, type=str,
+                        help='Search longitude (default: %(default)s)')
     parser.add_argument('-sb', '--sort_by', dest='sort_by',
                         default=DEFAULT_SORT_BY, type=str,
+                        help='Search sort value (default: %(default)s)')
+    parser.add_argument('-r', '--radius', dest='radius',
+                        default=DEFAULT_RADIUS, type=str,
                         help='Search sort value (default: %(default)s)')
 
     input_values = parser.parse_args()
 
     try:
-        query_api(input_values.term, input_values.location, input_values.sort_by)
+        query_api(input_values.term, input_values.latitude, input_values.longitude, input_values.sort_by, input_values.radius)
     except HTTPError as error:
         sys.exit(
             'Encountered HTTP error {0} on {1}:\n {2}\nAbort program.'.format(

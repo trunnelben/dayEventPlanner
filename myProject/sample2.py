@@ -1,3 +1,4 @@
+import os
 import requests
 import json
 ACCESS_TOKEN = 'AIzaSyDnAEuPuxGQh1DM_G3TZZDl6bhGVV2ZrvE'
@@ -15,8 +16,22 @@ def build_URL(search_text='',types_text=''):
     url = base_url+key_string+query_string+sensor_string+type_string
     return url
 
-a = build_URL(search_text='new york city attractions hiking')
+a = build_URL(search_text='san francisco attractions')
 print(a)
 response = requests.get(a)
 data = requests.get(a).json()
-print(data)
+# search = "San Francisco, CA"
+# print(data)
+# print(search)
+# print('python sample.py --location="%s"' % search)
+# os.system('python sample.py --location="%s"' % search)
+lat = str (data["results"][0]["geometry"]["location"]["lat"])
+long = str (data["results"][0]["geometry"]["location"]["lng"])
+placeName = str (data["results"][0]["name"])
+print(lat)
+print(long)
+print(placeName)
+# print('python sample.py --latitude="%s"' % lat)
+# print('python sample.py --longitude="%s"' % long)
+# os.system('python sample.py --latitude="%s" --longitude="%s"' % (lat, long))
+os.system('python sample.py --latitude="%s" --longitude="%s"' % (lat, long))
