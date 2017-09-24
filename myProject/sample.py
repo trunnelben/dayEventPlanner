@@ -20,6 +20,9 @@ import pprint
 import requests
 import sys
 import urllib
+import os
+from flask import Flask, request, session, g, redirect, url_for, abort, \
+     render_template, flash
 
 
 # This client code can run on Python 2.x or 3.x.  Your imports can be
@@ -35,6 +38,9 @@ except ImportError:
     from urllib import quote
     from urllib import urlencode
 
+app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 # OAuth credential placeholders that must be filled in by users.
 # You can find them on
@@ -165,8 +171,8 @@ def query_api(term, location, sort_by):
     if not businesses:
         print(u'No businesses for {0} in {1} found.'.format(term, location, sort_by))
         return
-    i = 1
-    while(i <= 1):
+    i = 0
+    while(i <= 3):
         business_id = businesses[i]['id']
 
         print(u'{0} businesses found, querying business info ' \
