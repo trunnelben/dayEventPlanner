@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import argparse
 ACCESS_TOKEN = 'AIzaSyCHw1SncshAFT3ry2n0poQGR4EArdx6I5Q'
 
 import urllib
@@ -15,11 +16,16 @@ def build_URL(search_text='',types_text=''):
         type_string = '&types='+urllib.quote(types_text)                        # More on types: https://developers.goo$
     url = base_url+key_string+query_string+sensor_string+type_string
     return url
+parser = argparse.ArgumentParser()
+parser.add_argument('-st', '--searchterm', dest='searchterm', type=str)
+input_values = parser.parse_args()
 
-a = build_URL(search_text='new york city attractions')
-print(a)
+a = build_URL(search_text=input_values.searchterm)
+# print(a)
 response = requests.get(a)
 data = requests.get(a).json()
+
+
 # search = "San Francisco, CA"
 # print(data)
 # print(search)
