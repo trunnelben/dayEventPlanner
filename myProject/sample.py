@@ -63,7 +63,7 @@ DEFAULT_TERM = 'dinner'
 DEFAULT_LATITUDE = '1.0'
 DEFAULT_LONGITUDE = '1.0'
 DEFAULT_SORT_BY = 'review_count'
-DEFAULT_RADIUS = '800' #radius of .5 miles
+DEFAULT_RADIUS = '1600' #radius of 1.0 miles
 SEARCH_LIMIT = 10
 
 
@@ -110,12 +110,12 @@ def request(host, path, bearer_token, url_params=None):
     url_params = url_params or {}
     url = '{0}{1}'.format(host, quote(path.encode('utf8')))
     abc = urllib.unquote(url)
-    print(abc)
+    # print(abc)
     headers = {
         'Authorization': 'Bearer %s' % bearer_token,
     }
 
-    print(u'Querying {0} ...'.format(url))
+    # print(u'Querying {0} ...'.format(url))
 
     response = requests.request('GET', url, headers=headers, params=url_params)
 
@@ -177,18 +177,28 @@ def query_api(term, latitude, longitude, sort_by, radius):
         print(u'No businesses for {0} in {1} found.'.format(term, latitude, longitude, sort_by, radius))
         return
     i = 0
-    while(i <= 0):
+    while(i <= 1):
         business_id = businesses[i]['id']
 
-        print(u'{0} businesses found, querying business info ' \
-            'for the top result "{1}" ...'.format(
-                len(businesses), business_id))
+        # print(u'{0} businesses found, querying business info ' \
+        #     'for the top result "{1}" ...'.format(
+        #         len(businesses), business_id))
         response = get_business(bearer_token, business_id)
 
-        print(u'Result for business "{0}" found:'.format(business_id))
+        # print(u'Result for business "{0}" found:'.format(business_id))
         # for the second mexican restuarant this does not work becasue
         # there is an escape character it has the N with a tilde
-        pprint.pprint(response, indent=2)
+        name = str (response["name"])
+        rating = str (response["rating"])
+        reviewCount = str (response["review_count"])
+        foodType = (response["categories"][0]["title"])
+        #pprint.pprint(response, indent=2)
+        print("restuarant " + str (i) + ":")
+        print("place = " + name)
+        print("food type = " + foodType)
+        print("Rating = " + rating)
+        print("Reviews = " + reviewCount)
+        print()
         i = i+1
 
 def main():
