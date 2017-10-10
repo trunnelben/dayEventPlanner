@@ -18,11 +18,12 @@ import argparse
 import json
 import pprint
 import requests
+import subprocess
 import sys
 import urllib
 import os
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
+from flask import Flask, flash, request, session, g, redirect, url_for, abort, \
+     render_template
 
 
 # This client code can run on Python 2.x or 3.x.  Your imports can be
@@ -63,7 +64,7 @@ DEFAULT_TERM = 'dinner'
 DEFAULT_LATITUDE = '1.0'
 DEFAULT_LONGITUDE = '1.0'
 DEFAULT_SORT_BY = 'review_count'
-DEFAULT_RADIUS = '1600' #radius of 1.0 miles
+DEFAULT_RADIUS = '500' #radius of 1.0 miles
 SEARCH_LIMIT = 10
 
 
@@ -177,6 +178,8 @@ def query_api(term, latitude, longitude, sort_by, radius):
         print(u'No businesses for {0} in {1} found.'.format(term, latitude, longitude, sort_by, radius))
         return
     i = 0
+    #f = open('out.txt', 'w')
+      # or f.write('...\n')
     while(i <= 1):
         business_id = businesses[i]['id']
 
@@ -193,13 +196,21 @@ def query_api(term, latitude, longitude, sort_by, radius):
         reviewCount = str (response["review_count"])
         foodType = (response["categories"][0]["title"])
         #pprint.pprint(response, indent=2)
+
+
         print("restuarant " + str (i) + ":")
-        print("place = " + name)
-        print("food type = " + foodType)
-        print("Rating = " + rating)
-        print("Reviews = " + reviewCount)
+        #f.write("restuarant " + str (i) + ":")
+        print("place = " + name + "<br />")
+        #f.write("place = " + name + "\n")
+        #f.write("food type = " + foodType + "\n")
+        print("food type = " + foodType + "<br />")
+        #f.write("Rating = " + rating + "\n")
+        #f.write("Reviews = " + reviewCount + "\n")
+        print("Rating = " + rating + "<br />")
+        print("Reviews = " + reviewCount + "<br />" + "<br />")
         print()
         i = i+1
+    #f.close()
 
 def main():
     parser = argparse.ArgumentParser()

@@ -16,19 +16,18 @@
 </head>
 
 <body>
-<<<<<<< HEAD
   test
-=======
-  Blake sucks dick
->>>>>>> f5b159ea8af58c883a0e9988bd17f1f0a329c954
-  <form action="/action_page.php">
-  First name:<br>
-  <input type="text" name="firstname" value="Mickey">
-  <br>
-  Last name:<br>
-  <input type="text" name="lastname" value="Mouse">
-  <br><br>
-  <input type="submit" value="Submit">
+
+  <form action="/cgi-bin/hello.py" method="post">
+First Name: <input type="text" name="first_name"><br />
+Last Name: <input type="text" name="last_name" />
+Search: <input type="text" name="searchbox">
+<input type="submit" value="Submit" />
+</form>
+
+<form name="search" action="/cgi-bin/hello.py" method="post">
+Search: <input type="text" name="searchbox">
+<input type="submit" value="Submit">
 </form>
 
 <p>If you click the "Submit" button, the form-data will be sent to a page called "/action_page.php".</p>
