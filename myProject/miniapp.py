@@ -1,3 +1,7 @@
+#look into caching the api call and then update results every now and then
+#make these results into a rest api and then can hook it up to the html/web app
+#then can store the results from the rest api into a database and a cache potentially that stores the top results
+
 from flask import Flask, render_template, flash, request
 import os
 import requests
